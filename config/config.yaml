@@ -1,0 +1,159 @@
+behavior_names:
+  - 低活动
+  - 正常游动
+  - 快速游动
+  - 急转避让
+
+num_classes: 4
+num_keypoints: 11
+fps: 30
+window_size: 96
+stride: 48
+
+dataset:
+  train_dir: dataset/train
+  val_dir: dataset/val
+  test_dir: dataset/test
+
+preprocess:
+  conf_threshold: 0.1
+  eps: 1.0e-6
+
+keypoints:
+  names:
+    - 嘴巴
+    - 眼睛
+    - 鳃盖后缘上部
+    - 背鳍前部
+    - 尾鳍前端上部
+    - 尾鳍顶部
+    - 尾鳍中部
+    - 尾鳍底部
+    - 尾鳍前端下部
+    - 臀鳍前部
+    - 鳃盖后缘下部
+  mouth_index: 0
+  tail_index: 6
+  gill_indices: [2, 10]
+  peduncle_indices: [4, 8]
+  parts:
+    head: [0, 1, 2, 10]
+    trunk: [2, 3, 4, 8, 9, 10]
+    tail: [4, 5, 6, 7, 8]
+  skeleton:
+    - [0, 1]
+    - [1, 2]
+    - [2, 3]
+    - [3, 4]
+    - [4, 5]
+    - [5, 6]
+    - [6, 7]
+    - [7, 8]
+    - [8, 9]
+    - [9, 10]
+    - [10, 0]
+
+model:
+  coord_embed: 64
+  motion_embed: 32
+  geometry_embed: 32
+  fusion_channels: 128
+  dropout: 0.3
+  fbpem:
+    pooling: mean
+    mapping_layers: 1
+    part_channels: 32
+  pqtgm:
+    kernel_size: 3
+    smooth_window: 5
+    out_channels: 128
+  mdtcm:
+    layers: 2
+    branches: 4
+    kernel_size: 3
+    dilations: [1, 2, 4, 8]
+  classifier_channels: [128, 64, 4]
+  regressor_channels: [128, 64, 5]
+
+train:
+  seed: 42
+  batch_size: 32
+  epochs: 120
+  learning_rate: 0.001
+  eta_min: 1.0e-6
+  warmup_epochs: 5
+  weight_decay: 0.0001
+  aux_loss_weight: 0.2
+  num_workers: 0
+  device: auto
+  checkpoint_dir: checkpoints
+  best_name: best.pth
+  last_name: last.pth
+
+augment:
+  coord_noise_std: 0.01
+  keypoint_drop_prob: 0.1
+  time_crop_min: 0.8
+  time_crop_max: 1.0
+
+aux_norm:
+  speed: 5.0
+  accel: 20.0
+  yaw: 5.0
+  bend: 1.57079632679
+  tail_swing: 5.0
+
+labeling:
+  speed_low: 0.20
+  speed_fast: 1.20
+  accel_low: 0.80
+  accel_normal: 2.00
+  accel_turn: 1.50
+  yaw_low_deg: 30
+  yaw_normal_deg: 70
+  yaw_turn_deg: 100
+  bend_low_deg: 8
+  bend_normal_min_deg: 6
+  bend_normal_max_deg: 20
+  bend_fast_deg: 10
+  bend_turn_deg: 18
+  tail_low_deg: 40
+  tail_normal_min_deg: 40
+  tail_normal_max_deg: 150
+  tail_fast_deg: 150
+  tail_turn_deg: 80
+  use_unverified: false
+  allow_legacy_samples: false
+
+association:
+  center_weight: 0.4
+  iou_weight: 0.3
+  pose_weight: 0.3
+  max_center_distance: 200.0
+  max_cost: 0.85
+  max_missing_frames: 15
+  max_consecutive_missing: 8
+  max_jump_body_lengths: 1.5
+  max_jump_frame_ratio: 0.20
+  min_mean_confidence: 0.45
+  min_valid_ratio: 0.8
+  min_valid_keypoints: 8
+
+split:
+  train_ratio: 0.75
+  val_ratio: 0.0
+  seed: 42
+
+test:
+  batch_size: 32
+  num_workers: 0
+  device: auto
+  checkpoint: checkpoints/best.pth
+  output_dir: outputs
+  confusion_matrix_name: confusion_matrix.png
+
+online:
+  max_idle_frames: 96
+  max_idle_seconds: 3.2
+  device: auto
+

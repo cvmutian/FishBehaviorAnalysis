@@ -1,0 +1,41 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.venv/
+venv/
+
+# Secrets and local configuration
+.env
+.env.*
+*.pem
+*.key
+credentials.json
+secrets.json
+
+# Local datasets, weights, and experiment outputs
+dataset/**
+!dataset/**/
+!dataset/**/.gitkeep
+checkpoints/
+outputs/
+*.pth
+*.pt
+*.ckpt
+*.npz
+*.npy
+
+# Editors and operating system
+.vscode/
+.idea/
+*.swp
+*~
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Logs
+*.log
+_test_tmp/
